@@ -43,7 +43,7 @@ jobs:
           fetch-tags: true
 
       - name: Run unit tests on Windows
-        shell: pwsh
+        shell: powershell
         run: |
           & "C:/Program Files/Git/bin/bash.exe" -ex "${GITHUB_WORKSPACE}/buildconfig/Jenkins/Conda/conda-buildscript" "${GITHUB_WORKSPACE}" win-64-ci --extra-cmake-flags "--fresh"
 
