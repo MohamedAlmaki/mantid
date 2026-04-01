@@ -31,6 +31,11 @@ jobs:
     #
 
     steps:
+      - name: Install PowerShell Core
+        if: (!cancelled())
+        shell: powershell
+        run: choco install powershell-core -y --no-progress
+
       - name: Print shell environment vars (debug)
         if: github.event_name == 'workflow_dispatch'
         shell: pwsh
@@ -43,7 +48,7 @@ jobs:
           fetch-tags: true
 
       - name: Run unit tests on Windows
-        shell: powershell
+        shell: pwsh
         run: |
           $workspace = ("${{ github.workspace }}" -replace '\\', '/')
           & "C:/Program Files/Git/bin/bash.exe" -ex ($workspace + "/buildconfig/Jenkins/Conda/conda-buildscript") $workspace win-64-ci --extra-cmake-flags "--fresh"
