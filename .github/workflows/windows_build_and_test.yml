@@ -44,7 +44,8 @@ jobs:
 
       - name: Run unit tests on Windows
         shell: bash
-        run: ${GITHUB_WORKSPACE}/buildconfig/Jenkins/Conda/conda-buildscript ${GITHUB_WORKSPACE} win-64-ci
+        run: |
+          "C:/Program Files/Git/bin/bash.exe" -ex "${GITHUB_WORKSPACE}/buildconfig/Jenkins/Conda/conda-buildscript" "${GITHUB_WORKSPACE}" win-64-ci --extra-cmake-flags "--fresh"
 
       - name: Upload build and test log artifacts
         uses: actions/upload-artifact@v7
