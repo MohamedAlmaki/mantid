@@ -72,8 +72,13 @@ jobs:
           name: test_logs
           path: ${{ github.workspace }}/build/test_logs/*.log
 
+      - name: Setup Python for unit test report
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
       - name: Unit test report
-        uses: EnricoMi/publish-unit-test-result-action/windows/bash@v2
+        uses: EnricoMi/publish-unit-test-result-action/windows@v2
         if: (!cancelled())
         with:
           check_name: "Unit test results"
