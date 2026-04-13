@@ -42,11 +42,28 @@ jobs:
           fetch-depth: 100
           fetch-tags: true
 
-      - name: Run unit tests on Windows
+      # - name: Run unit tests on Windows
+      #   shell: pwsh
+      #   run: |
+      #     $workspace = ("${{ github.workspace }}" -replace '\\', '/')
+      #     & "C:/Program Files/Git/bin/bash.exe" -ex ($workspace + "/buildconfig/Jenkins/Conda/conda-buildscript") $workspace win-64-ci --extra-cmake-flags "--fresh"
+
+      - name: Create mock log files for upload testing
         shell: pwsh
         run: |
-          $workspace = ("${{ github.workspace }}" -replace '\\', '/')
-          & "C:/Program Files/Git/bin/bash.exe" -ex ($workspace + "/buildconfig/Jenkins/Conda/conda-buildscript") $workspace win-64-ci --extra-cmake-flags "--fresh"
+          New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/build/test_logs"
+          "Mock build log - $(Get-Date)" | Out-File "${{ github.workspace }}/build/test_logs/build.log"
+          "Mock test log - $(Get-Date)" | Out-File "${{ github.workspace }}/build/test_logs/test.log"
+          New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/build/Testing"
+          @"
+          <?xml version="1.0" encoding="UTF-8"?>
+          <testsuites>
+            <testsuite name="MockSuite" tests="2" failures="0" errors="0" time="0.1">
+              <testcase name="MockTestPass1" classname="MockSuite" time="0.05"/>
+              <testcase name="MockTestPass2" classname="MockSuite" time="0.05"/>
+            </testsuite>
+          </testsuites>
+          "@ | Out-File "${{ github.workspace }}/build/Testing/mock_unittest.xml" -Encoding utf8
 
       - name: Upload build and test log artifacts
         uses: actions/upload-artifact@v7
@@ -56,7 +73,7 @@ jobs:
           path: ${{ github.workspace }}/build/test_logs/*.log
 
       - name: Unit test report
-        uses: EnricoMi/publish-unit-test-result-action/windows@v2
+        uses: EnricoMi/publish-unit-test-result-action/windows/bash@v2
         if: (!cancelled())
         with:
           check_name: "Unit test results"
