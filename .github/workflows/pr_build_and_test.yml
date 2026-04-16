@@ -86,6 +86,11 @@ jobs:
         run: |
           env -0 | while IFS='' read -d '' line ; do printf '%s\t: %s\n' "${line%%=*}" "${line#*=}" | expand -t 30 | sed ':a;N;$!ba;s/\n/ /g'; done | LC_COLLATE=C sort -b
 
+      - name: Add Git bash to PATH (Windows)
+        if: matrix.os == 'Windows'
+        shell: pwsh
+        run: echo "C:\Program Files\Git\bin" >> $env:GITHUB_PATH
+
       - uses: actions/checkout@v6
         with:
           # Needed to fetch the tags for versioningit
@@ -129,7 +134,7 @@ jobs:
           files: build/Testing/*unittest.xml
 
       - name: Unit test report (Windows)
-        uses: EnricoMi/publish-unit-test-result-action/windows@v2
+        uses: EnricoMi/publish-unit-test-result-action/windows/bash@v2
         if: ${{ matrix.os == 'Windows' && failure() && steps.testunit.conclusion == 'failure' }}
         with:
           check_name: "Unit test results"
