@@ -56,6 +56,6 @@ public:
   }
 
   void testIntentionalFailureForWorkflowAnnotationTest() {
-    TS_FAIL("Intentional failure to test GitHub Actions source annotations");
+    TS_FAIL("Intentional failure to test GitHub Actions annotations");
   }
 };
