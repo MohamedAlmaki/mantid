@@ -1,0 +1,42 @@
+name: Publish PR test results
+
+on:
+  workflow_run:
+    workflows: ["PR Build and Test"]
+    types: [completed]
+
+permissions:
+  checks: write
+  pull-requests: write
+  actions: read
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.event == 'pull_request'
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts
+
+      - name: Publish unit test results
+        uses: EnricoMi/publish-unit-test-result-action/linux@v2
+        with:
+          check_name: "Unit test results"
+          commit: ${{ github.event.workflow_run.head_sha }}
+          event_file: artifacts/event-file/event.json
+          event_name: ${{ github.event.workflow_run.event }}
+          files: artifacts/junit-unit-*/*unittest.xml
+
+      - name: Publish system test results
+        uses: EnricoMi/publish-unit-test-result-action/linux@v2
+        with:
+          check_name: "System test results"
+          commit: ${{ github.event.workflow_run.head_sha }}
+          event_file: artifacts/event-file/event.json
+          event_name: ${{ github.event.workflow_run.event }}
+          files: artifacts/junit-system/**/TEST-systemtests*.xml

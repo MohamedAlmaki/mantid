@@ -38,6 +38,8 @@ jobs:
 
   build-and-test:
     needs: [doxygen]
+    permissions:
+      contents: read
 
     strategy:
       matrix:
@@ -127,20 +129,20 @@ jobs:
           pixi run --frozen bash -ex ${GITHUB_WORKSPACE}/buildconfig/Jenkins/Conda/run-tests ${GITHUB_WORKSPACE} false true $ENABLE_DOCS $ENABLE_DOC_TESTS ${BUILD_THREADS}
 
       - name: Unit test report (Linux)
-        uses: EnricoMi/publish-unit-test-result-action/linux@v2
-        if: ${{ matrix.os == 'Linux' && failure() && steps.testunit.conclusion == 'failure' }}
+        uses: actions/upload-artifact@v7
+        if: ${{ matrix.os == 'Linux' && always() && steps.testunit.conclusion != 'skipped' }}
         with:
-          check_name: "Unit test results (${{ matrix.os }})"
-          check_run: false
-          files: build/Testing/*unittest.xml
+          name: junit-unit-Linux
+          if-no-files-found: ignore
+          path: ${{ github.workspace }}/build/Testing/*unittest.xml
 
       - name: Unit test report (Windows)
-        uses: EnricoMi/publish-unit-test-result-action/windows/bash@v2
-        if: ${{ matrix.os == 'Windows' && failure() && steps.testunit.conclusion == 'failure' }}
+        uses: actions/upload-artifact@v7
+        if: ${{ matrix.os == 'Windows' && always() && steps.testunit.conclusion != 'skipped' }}
         with:
-          check_name: "Unit test results (${{ matrix.os }})"
-          check_run: false
-          files: build/Testing/*unittest.xml
+          name: junit-unit-Windows
+          if-no-files-found: ignore
+          path: ${{ github.workspace }}/build/Testing/*unittest.xml
 
       - name: Run system tests
         if: ${{ matrix.os == 'Linux' && steps.changes.outputs.code_changes == 'true' }}
@@ -162,12 +164,19 @@ jobs:
           path: ${{ github.workspace }}/build/**/*-mismatch.nxs
 
       - name: System test report
-        uses: EnricoMi/publish-unit-test-result-action/linux@v2
-        if: ${{ matrix.os == 'Linux' && failure() && steps.testsystem.conclusion == 'failure' }}
+        uses: actions/upload-artifact@v7
+        if: ${{ matrix.os == 'Linux' && always() && steps.testsystem.conclusion != 'skipped' }}
         with:
-          check_name: "System test results"
-          check_run: false
-          files: build/Testing/SystemTests/**/TEST-systemtests*.xml
+          name: junit-system
+          if-no-files-found: ignore
+          path: ${{ github.workspace }}/build/Testing/SystemTests/**/TEST-systemtests*.xml
+
+      - name: Upload event payload
+        uses: actions/upload-artifact@v7
+        if: ${{ matrix.os == 'Linux' && always() && github.event_name == 'pull_request' }}
+        with:
+          name: event-file
+          path: ${{ github.event_path }}
 
       - name: Upload build and test log artifacts
         uses: actions/upload-artifact@v7
