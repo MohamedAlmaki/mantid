@@ -54,4 +54,8 @@ public:
   void testGetIconThrowsIfIconLibraryIsNotPresent() {
     TS_ASSERT_THROWS(MantidQt::Icons::getIcon(QString("fda.run-fast")), const std::invalid_argument &);
   }
+
+  void testIntentionalFailureForWorkflowAnnotationTest() {
+    TS_FAIL("Intentional failure to test GitHub Actions source annotations");
+  }
 };
