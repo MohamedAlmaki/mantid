@@ -23,20 +23,35 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: artifacts
 
-      - name: Publish unit test results
+      - name: Publish unit test results (Linux)
         uses: EnricoMi/publish-unit-test-result-action/linux@v2
         with:
-          check_name: "Unit test results"
+          check_name: "Unit test results (Linux)"
           commit: ${{ github.event.workflow_run.head_sha }}
           event_file: artifacts/event-file/event.json
           event_name: ${{ github.event.workflow_run.event }}
-          files: artifacts/junit-unit-*/*unittest.xml
+          check_run_annotations: skipped tests
+          comment_mode: failures
+          files: artifacts/junit-unit-Linux/*unittest.xml
 
-      - name: Publish system test results
+      - name: Publish unit test results (Windows)
         uses: EnricoMi/publish-unit-test-result-action/linux@v2
         with:
-          check_name: "System test results"
+          check_name: "Unit test results (Windows)"
           commit: ${{ github.event.workflow_run.head_sha }}
           event_file: artifacts/event-file/event.json
           event_name: ${{ github.event.workflow_run.event }}
+          check_run_annotations: skipped tests
+          comment_mode: failures
+          files: artifacts/junit-unit-Windows/*unittest.xml
+
+      - name: Publish system test results (Linux)
+        uses: EnricoMi/publish-unit-test-result-action/linux@v2
+        with:
+          check_name: "System test results (Linux)"
+          commit: ${{ github.event.workflow_run.head_sha }}
+          event_file: artifacts/event-file/event.json
+          event_name: ${{ github.event.workflow_run.event }}
+          check_run_annotations: skipped tests
+          comment_mode: failures
           files: artifacts/junit-system/**/TEST-systemtests*.xml
