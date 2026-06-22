@@ -27,6 +27,12 @@ class MantidVersionTest(unittest.TestCase):
         self.assertTrue("." in str(version))
         assertRaisesNothing(self, print, version())
 
+    def test_intentional_python_failure_one(self):
+        self.fail("Intentional Python failure #1 for workflow annotation test.")
+
+    def test_intentional_python_failure_two(self):
+        self.assertEqual(1 + 1, 3, "Intentional Python failure #2 for workflow annotation test.")
+
 
 if __name__ == "__main__":
     unittest.main()
