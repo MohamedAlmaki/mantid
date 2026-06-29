@@ -46,6 +46,17 @@ devsite:
  - '.github/filters.yaml'
  - '.github/actions/devsite-build/**'
  - '.github/workflows/devdocs-publish.yml'
+user_docs:
+ - *files_cpp
+ - *files_py
+ - *files_config
+ - *files_workflow
+ - 'Framework/**'
+ - 'instrument/**'
+ - 'qt/**'
+ - 'scripts/**'
+ - 'tools/**'
+ - 'docs/**'
 code_changes:
  - *files_cpp
  - *files_py
