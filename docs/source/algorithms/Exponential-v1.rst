@@ -46,6 +46,16 @@ Output
 
   True
 
+.. TEMPORARY: dummy failing doctest to verify the CI doctest failure report. Remove before merge.
+
+.. testcode:: DummyDoctestFailure
+
+  print("hello")
+
+.. testoutput:: DummyDoctestFailure
+
+  goodbye
+
 .. categories::
 
 .. sourcelink::
